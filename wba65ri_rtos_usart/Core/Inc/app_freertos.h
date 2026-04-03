@@ -29,7 +29,7 @@ extern "C" {
 #include "task.h"
 #include "main.h"
 #include "cmsis_os2.h"
-
+#include "queue.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -42,7 +42,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+static QueueHandle_t uart_txq; // TX queue for UART
 /* USER CODE END EC */
 
 /* Private define ------------------------------------------------------------*/
@@ -65,8 +65,8 @@ extern osThreadId_t UartTask03Handle;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
-void StartTask02(void *argument);
-void StartTask03(void *argument);
+void uart_task(void *argument);
+void SimpleUartTransmitTask(void *argument);
 void StartTask04(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */

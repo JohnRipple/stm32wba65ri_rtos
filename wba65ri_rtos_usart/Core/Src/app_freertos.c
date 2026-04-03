@@ -103,16 +103,16 @@ void MX_FREERTOS_Init(void) {
 	UART_HandleTypeDef* huart3 = getHuart3();
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+  uart_txq = xQueueCreate(256, sizeof(char));
   /* USER CODE END RTOS_QUEUES */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of UartTask01 */
-  UartTask01Handle = osThreadNew(StartTask02, huart3, &UartTask01_attributes);
+  UartTask01Handle = osThreadNew(uart_task, huart3, &UartTask01_attributes);
 
-  /* creation of UartTask02 */
-  UartTask02Handle = osThreadNew(StartTask03, NULL, &UartTask02_attributes);
+  /* Example task to show transmitting data on uart */
+  //UartTask02Handle = osThreadNew(SimpleUartTransmitTask, NULL, &UartTask02_attributes);
 
   /* creation of UartTask03 */
   UartTask03Handle = osThreadNew(StartTask04, NULL, &UartTask03_attributes);
@@ -125,6 +125,13 @@ void MX_FREERTOS_Init(void) {
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
 
+}
+
+static void uart_puts(const char *s) {
+	for ( ; *s; ++s) {
+		//blocks when queue is full
+		xQueueSend(uart_txq, s, portMAX_DELAY);
+	}
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -140,7 +147,9 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    uart_puts("Now this is a message.. \n\r");
+    uart_puts("   send via FreeRTOS queues.\n\n\r");
+    vTaskDelay(pdMS_TO_TICKS(1000));
   }
   /* USER CODE END defaultTask */
 }
@@ -152,7 +161,21 @@ void StartDefaultTask(void *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask02 */
-void StartTask02(void *argument)
+void uart_task(void *argument) {
+	uint8_t ch;
+	UART_HandleTypeDef* huart3 = (UART_HandleTypeDef*)argument;
+
+	for(;;) {
+		// Receive char to be TX
+		if (xQueueReceive(uart_txq, &ch, 500) == pdPASS) {
+			while (HAL_UART_Transmit(huart3, &ch, sizeof(ch), 500) != HAL_OK)
+				taskYIELD();
+		}
+	}
+}
+
+
+void SimpleUartTransmitTask(void *argument)
 {
   /* USER CODE BEGIN UartTask01 */
   /* Infinite loop */
@@ -173,24 +196,6 @@ void StartTask02(void *argument)
   /* USER CODE END UartTask01 */
 }
 
-/* USER CODE BEGIN Header_StartTask03 */
-/**
-* @brief Function implementing the UartTask02 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask03 */
-void StartTask03(void *argument)
-{
-  /* USER CODE BEGIN UartTask02 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END UartTask02 */
-}
-
 /* USER CODE BEGIN Header_StartTask04 */
 /**
 * @brief Function implementing the UartTask03 thread.
@@ -200,13 +205,11 @@ void StartTask03(void *argument)
 /* USER CODE END Header_StartTask04 */
 void StartTask04(void *argument)
 {
-  /* USER CODE BEGIN UartTask03 */
-  /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	uart_puts("Task04\r\n");
+	osDelay(500);
   }
-  /* USER CODE END UartTask03 */
 }
 
 /* Private application code --------------------------------------------------*/

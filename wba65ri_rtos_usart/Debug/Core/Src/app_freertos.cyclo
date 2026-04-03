@@ -1,5 +1,6 @@
 ../Core/Src/app_freertos.c:86:6:MX_FREERTOS_Init	1
-../Core/Src/app_freertos.c:137:6:StartDefaultTask	1
-../Core/Src/app_freertos.c:155:6:StartTask02	2
-../Core/Src/app_freertos.c:183:6:StartTask03	1
-../Core/Src/app_freertos.c:201:6:StartTask04	1
+../Core/Src/app_freertos.c:130:13:uart_puts	2
+../Core/Src/app_freertos.c:144:6:StartDefaultTask	1
+../Core/Src/app_freertos.c:164:6:uart_task	3
+../Core/Src/app_freertos.c:178:6:SimpleUartTransmitTask	2
+../Core/Src/app_freertos.c:206:6:StartTask04	1

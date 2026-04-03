@@ -1,0 +1,25 @@
+This is a general summary of the operation of the program:
+
+    1. Task StartDefaultTask() calls upon a routine uart_puts() to send strings of text to the UART, one second apart.
+     
+    2. The function uart_puts() queues the characters in a message queue referenced by handle uart_txq. If the queue is full, control of StartDefaultTask() yields.
+     
+    3. Task uart_task() unqueues characters received from the queue referenced by handle uart_txq.
+     
+    4. Each character received is delivered to the UART to be sent, provided that it is ready. When the UART is busy, the control of the task yields.
+    
+I've also added the StartTask04 just to test out how the queue is working. Since the StartDefaultTask runs all at once it gets its entire message into the queue
+without interruptions from StartTask04. Then StartTask04 puts its message into the queue twice since it only yields for 0.5s while StartDefaultTask yields for 1s.
+The result is the following:
+
+Task04
+Task04
+Now this is a message.. 
+   send via FreeRTOS queues.
+
+Task04
+Task04
+Now this is a message.. 
+   send via FreeRTOS queues.
+   
+I am wondering if there is a way to preempt the default taks to get the Task04 message printed somewhere in the middle of the default task message?
