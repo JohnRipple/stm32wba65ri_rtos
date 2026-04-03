@@ -1,0 +1,5 @@
+../Core/Src/app_freertos.c:78:6:MX_FREERTOS_Init	8	static
+../Core/Src/app_freertos.c:122:6:StartDefaultTask	16	static
+../Core/Src/app_freertos.c:141:6:StartTask02	16	static
+../Core/Src/app_freertos.c:153:6:StartTask03	16	static
+../Core/Src/app_freertos.c:164:6:BSP_PB_Callback	16	static
